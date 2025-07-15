@@ -1,6 +1,6 @@
 import discord
 
-class Client(discord.client): #necessary for the bot to run
+class Client(discord.Client): #necessary for the bot to run
     async def on_ready(self): #this function executes when the bot first goes online
         print("{} is back!".format(self.user))
     
