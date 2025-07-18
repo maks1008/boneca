@@ -12,7 +12,7 @@ class Client(discord.Client): #necessary for the bot to run
         print("{} is back!".format(self.user))
     
     async def on_message(self, message): #when a message is sent
-        action_value = random.randrange(1,61) # generates a number from 1 to 60
+        action_value = random.randrange(1,121) # generates a number from 1 to 121
         if message.author == self.user:
             return
         if action_value == glaze_value:
