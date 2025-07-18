@@ -6,5 +6,3 @@ def ragebait():
         ragebait_list = [line.strip() for line in ragebait_file]
     random.shuffle(ragebait_list)
     return ragebait_list[0]
-
-print(ragebait())
