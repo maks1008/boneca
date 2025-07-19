@@ -2,7 +2,7 @@ import discord
 import random
 import botActions.messageReactions as messageReactions
 
-MESSAGE_RESPONSE_FREQUENCY = 3
+MESSAGE_RESPONSE_FREQUENCY = 50
 
 class Client(discord.Client):
     async def on_ready(self):
