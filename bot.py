@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-MESSAGE_RESPONSE_FREQUENCY = 50
+MESSAGE_RESPONSE_FREQUENCY = 4
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978)
 
 class Client(commands.Bot):
@@ -33,10 +33,10 @@ class Client(commands.Bot):
 
         #GENERATES A MESSAGE RESPONSE (glazing/ragebait)
         action_value = random.randrange(1, 2 * MESSAGE_RESPONSE_FREQUENCY + 1)
-        if action_value == 1:
+        if action_value == 1 and admin_utils.accepted_channel(str(message.channel.mention)):
             await message.channel.send(messageReactions.message_response("GLAZING"))
             return
-        elif action_value == 2:
+        elif action_value == 2 and admin_utils.accepted_channel(str(message.channel.mention)):
             await message.channel.send(messageReactions.message_response("RAGEBAITING"))
             return
         
@@ -61,6 +61,25 @@ async def banish_boneca(interaction: discord.Interaction):
         await interaction.response.send_message("Aw man :frowning2: you've taken away my permission to interact with {} :frowning2:".format(interaction.channel.mention))
     else:
         await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:")
+
+@client.tree.command(name="report", description="flag boneca's last message as innapropriate", guild=RBBT_SERVER_ID)
+async def report_boneca(interaction: discord.Integration):
+    channel = interaction.channel
+    async for message in channel.history(limit=20):
+        if message.author == client.user:
+            
+            datkid = await client.fetch_user(572732144195993609)
+            await datkid.send("**{} USED /REPORT:** {}".format(interaction.user.name, message.content))
+
+            report_status = admin_utils.report(message.content)
+            await message.delete()
+            if report_status:
+                await interaction.response.send_message("I'm sorry :worried: I took that too far... I've removed that prompt from my database.")
+            else:
+                await interaction.response.send_message("I'm sorry :worried: I took that too far... I have asked the devs to review this one ASAP.")
+            return
+        
+    await interaction.channel.send("I can't figure out what I did wrong :disappointed: Please get in touch with @datkid10021 ASAP.")
 
 
 
