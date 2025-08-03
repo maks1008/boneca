@@ -1,60 +1,56 @@
+#RELEVANT FILES
 server_permissions_file = 'commands/administrativeCommands/bonecaServerPermissions.txt'
-accepted_channel_id = set()
-
 do_not_target_file = 'commands/administrativeCommands/doNotTarget.txt'
-do_not_target_set = set()
-
 glaze_messages_file = 'botActions/glazeMessages.txt'
 ragebait_messages_file = 'botActions/ragebaitMessages.txt'
 quarantined_messages_file = 'commands/administrativeCommands/quarantinedMessages.txt'
 
+#RELEVANT SETS
+server_permissions_set = set()
+do_not_target_set = set()
 
+#FILE PROCESSING
 def unpack():
-    """converts all channel ids from channelID.txt into the accepted_channel_id set"""
-    with open(server_permissions_file, encoding='utf-8') as channelID_file:
-        channelID_list = [line.strip() for line in channelID_file]
-    for i in channelID_list:
-        accepted_channel_id.add(i)
+    """executed when bot first goes online. unpacks data into abovementioned relevant sets"""
+    unpack_txt_files(server_permissions_file, server_permissions_set)
+    unpack_txt_files(do_not_target_file, do_not_target_set)
 
-def unpack_do_not_target():
-    """converts all channel ids from doNotTarget.txt into the accepted_channel_id set"""
-    with open(do_not_target_file, encoding='utf-8') as dnt_file:
-        dnt_list = [line.strip() for line in dnt_file]
-    for i in dnt_list:
-        do_not_target_set.add(i) 
+def unpack_txt_files(txt_file, relevant_set):
+    """unpacks data from txt_file to relevant_set"""
+    with open(txt_file, encoding='utf-8') as processed_txt:
+        txt_list = [line.strip() for line in processed_txt]
+    for i in txt_list:
+        relevant_set.add(i)
 
-def update_server_permissions():
-    """updates bonecaServerPermissions.txt to whats currently in accepted_channel_id"""
-    with open(server_permissions_file, 'w', encoding='utf-8') as channelID_file:
-        for i in accepted_channel_id:
-            channelID_file.write("{}\n".format(i))
+def update_txt_files(txt_file, relevant_set):
+    """transfers current info in relevant_set to specified txt_file"""
+    with open(txt_file, 'w', encoding="utf-8") as new_txt:
+        for i in relevant_set:
+            new_txt.write("{}\n".format(i))
 
-def update_doNotTargetTXT():
-    with open(do_not_target_file, 'w', encoding='utf-8') as dnt_file:
-        for i in do_not_target_set:
-            dnt_file.write("{}\n".format(i))
-
+#BOT FUNCTIONALITY
 def introduce(channel_id):
-    """adds channel_id to accepted_channel_id and bonecaServerPermissions.txt"""
-    accepted_channel_id.add(channel_id)
-    update_server_permissions()
+    """adds channel_id to server_permissions_set and bonecaServerPermissions.txt"""
+    server_permissions_set.add(channel_id)
+    update_txt_files(server_permissions_file, server_permissions_set)
 
 def banish(channel_id):
-    """removes channel_id from accepted_channel_id and bonecaServerPermissions"""
-    accepted_channel_id.discard(channel_id)
-    update_server_permissions()
+    """removes channel_id from server_permissions_set and bonecaServerPermissions"""
+    server_permissions_set.discard(channel_id)
+    update_txt_files(server_permissions_file, server_permissions_set)
 
-def accepted_channel(channel_id):
-    """checks if channel_id is an accepted channel"""
-    return channel_id in accepted_channel_id
-
-def dnt_user(user):
-    """checks if user is in the do_not_target_set"""
-    return user in do_not_target_set
+def not_me(user):
+    """adds/removes user in do_not_target_set and do_not_target_file"""
+    if user in do_not_target_set:
+        do_not_target_set.discard(user)
+    else:
+        do_not_target_set.add(user)
+    update_txt_files(do_not_target_file, do_not_target_set)
 
 def report(message):
     """#1 - quarantines message 
-    #2 - removes message from glaze/ragebait pool and send True if execution successful"""
+    #2 - removes message from glaze/ragebait pool
+    #3 - returns True if message was wiped from txt files, False is message is hard coded elsewhere"""
     with open(quarantined_messages_file, 'a', encoding='utf-8') as quarantined_messages:
         quarantined_messages.write("{}\n".format(message))
 
@@ -78,12 +74,11 @@ def report(message):
     
     return False
 
-def not_me1(user):
-    """adds user to do_not_target_set and do_not_target_file"""
-    do_not_target_set.add(user)
-    update_doNotTargetTXT()
+#GETTERS
+def valid_channel(channel_id):
+    """checks if channel_id is in server_permissions_set"""
+    return channel_id in server_permissions_set
 
-def not_me2(user):
-    """removes user from do_not_target_set and do_not_target_file"""
-    do_not_target_set.discard(user)
-    update_doNotTargetTXT()
+def dnt_user(user):
+    """checks if user is in the do not target list"""
+    return user in do_not_target_set
