@@ -5,23 +5,24 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-MESSAGE_RESPONSE_FREQUENCY = 1
-RBBT_SERVER_ID = discord.Object(id=1368129546578300978)
+MESSAGE_RESPONSE_FREQUENCY = 1 #HOW OFTEN BONECA RESPONDS
+RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
 
 class Client(commands.Bot):
     async def on_ready(self):
-        print("{} is back!".format(self.user))
+        """AS SOON AS BOT GOES ONLINE"""
         admin_utils.unpack()
-        admin_utils.unpack_do_not_target()
 
         try:
-            synced = await self.tree.sync(guild=RBBT_SERVER_ID)
+            synced = await self.tree.sync(guild=RBBT_SERVER_ID) #FORCES BOT TO SYNC SLASH COMMANDS
             print("{} commands succesfully synced to {}".format(len(synced), RBBT_SERVER_ID.id))
-
         except Exception as e:
             print("ERROR: {}".format(e))
+
+        print("{} is up and running!".format(self.user))
     
     async def on_message(self, message):
+        """MESSAGE REACTIONS"""
 
         #IGNORES THE FOLLOWING MESSAGES
         if message.author == self.user:
@@ -38,23 +39,26 @@ class Client(commands.Bot):
             return
         
         #GENERATES A MESSAGE RESPONSE (glazing/ragebait)
-        action_value = random.randrange(1, 2 * MESSAGE_RESPONSE_FREQUENCY + 1)
-        if action_value == 1:
-            await message.channel.send(messageReactions.message_response("GLAZING"))
-            return
-        elif action_value == 2:
-            await message.channel.send(messageReactions.message_response("RAGEBAITING"))
-            return
-        
+        if len(message.content.split()) > 3:
+            action_value = random.randrange(1, 2 * MESSAGE_RESPONSE_FREQUENCY + 1)
+            if action_value == 1:
+                await message.channel.send(messageReactions.message_response("GLAZING"))
+                return
+            elif action_value == 2:
+                await message.channel.send(messageReactions.message_response("RAGEBAITING"))
+                return
+
+#THE FOLLOWING SECTION INITIALIZES AND EXECUTES BOT'S SLASH COMMANDS
 intents = discord.Intents.default()
 intents.message_content = True
 client = Client(command_prefix="!", intents=intents) #command prefix is arbitrary, discord enforces slash commands
+
 
 @client.tree.command(name="introduce", description="Introduce Boneca to this channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
     channel_id = str(interaction.channel.mention)
     if admin_utils.accepted_channel(channel_id):
-        await interaction.response.send_message("I already have permissions to talk here! What are you doing? Give me more permissions than everyone else?!")
+        await interaction.response.send_message("I already have permissions to interact with {}!".format(interaction.channel.mention))
     else:
         admin_utils.introduce(channel_id)
         await interaction.response.send_message("You have given me permission to interact with {}!".format(interaction.channel.mention))
@@ -73,8 +77,11 @@ async def report_boneca(interaction: discord.Integration):
     channel = interaction.channel
     async for message in channel.history(limit=20):
         if message.author == client.user:
+            #FLICKS A DM TO datkid
             datkid = await client.fetch_user(572732144195993609)
             await datkid.send("**{} USED /REPORT:** {}".format(interaction.user.name, message.content))
+
+            #REMOVES MESSAGE
             report_status = admin_utils.report(message.content)
             await message.delete()
             if report_status:
@@ -87,13 +94,12 @@ async def report_boneca(interaction: discord.Integration):
 @client.tree.command(name="notme", description="Toggle Boneca's permissions to interact with you", guild=RBBT_SERVER_ID)
 async def notme_boneca(interaction: discord.Integration):
     user = str(interaction.user.id)
+    admin_utils.not_me(user)
     if admin_utils.dnt_user(user):
-        admin_utils.not_me2(user)
-        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
-    else:
-        admin_utils.not_me1(user)
         await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.")
+    elif not admin_utils.dnt_user(user):
+        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
 
 
-
+#MANDATORY FOR BOT TO RUN
 client.run("") #token goes here
