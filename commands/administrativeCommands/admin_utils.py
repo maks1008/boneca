@@ -39,14 +39,12 @@ def banish(channel_id):
     server_permissions_set.discard(channel_id)
     update_txt_files(server_permissions_file, server_permissions_set)
 
-def not_me1(user):
-    """adds user to do_not_target_set and do_not_target_file"""
-    do_not_target_set.add(user)
-    update_txt_files(do_not_target_file, do_not_target_set)
-
-def not_me2(user):
-    """removes user from do_not_target_set and do_not_target_file"""
-    do_not_target_set.discard(user)
+def not_me(user):
+    """adds/removes user in do_not_target_set and do_not_target_file"""
+    if user in do_not_target_set:
+        do_not_target_set.discard(user)
+    else:
+        do_not_target_set.add(user)
     update_txt_files(do_not_target_file, do_not_target_set)
 
 def report(message):
@@ -77,10 +75,10 @@ def report(message):
     return False
 
 #GETTERS
-def server_permissions_set(channel_id):
+def valid_channel(channel_id):
     """checks if channel_id is in server_permissions_set"""
     return channel_id in server_permissions_set
 
 def dnt_user(user):
-    """checks if user is in the do_not_target_set"""
+    """checks if user is in the do not target list"""
     return user in do_not_target_set
