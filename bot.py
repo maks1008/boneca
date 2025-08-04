@@ -76,7 +76,7 @@ async def banish_boneca(interaction: discord.Interaction):
         else:
             await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:")
     else:
-        interaction.response.send_message("This command may only be used by admins of this server.")
+        await interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="report", description="Flag Boneca's last message as innapropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
