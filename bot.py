@@ -56,21 +56,27 @@ client = Client(command_prefix="!", intents=intents) #command prefix is arbitrar
 
 @client.tree.command(name="introduce", description="Introduce Boneca to this channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
-    channel_id = str(interaction.channel.mention)
-    if admin_utils.valid_channel(channel_id):
-        await interaction.response.send_message("I already have permissions to interact with {}!".format(interaction.channel.mention))
+    if interaction.user.guild_permissions.administrator:
+        channel_id = str(interaction.channel.mention)
+        if admin_utils.valid_channel(channel_id):
+            await interaction.response.send_message("I already have permissions to interact with {}!".format(interaction.channel.mention))
+        else:
+            admin_utils.introduce(channel_id)
+            await interaction.response.send_message("You have given me permission to interact with {}!".format(interaction.channel.mention))
     else:
-        admin_utils.introduce(channel_id)
-        await interaction.response.send_message("You have given me permission to interact with {}!".format(interaction.channel.mention))
+        interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="banish", description="Remove Boneca from this channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
-    channel_id = str(interaction.channel.mention)
-    if admin_utils.valid_channel(channel_id):
-        admin_utils.banish(channel_id)
-        await interaction.response.send_message("Aw man :frowning2: you've taken away my permission to interact with {} :frowning2:".format(interaction.channel.mention))
+    if interaction.user.guild_permissions.administrator:
+        channel_id = str(interaction.channel.mention)
+        if admin_utils.valid_channel(channel_id):
+            admin_utils.banish(channel_id)
+            await interaction.response.send_message("Aw man :frowning2: you've taken away my permission to interact with {} :frowning2:".format(interaction.channel.mention))
+        else:
+            await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:")
     else:
-        await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:")
+        interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="report", description="Flag Boneca's last message as innapropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
@@ -105,4 +111,5 @@ async def notme_boneca(interaction: discord.Integration):
 
 
 #MANDATORY FOR BOT TO RUN
-client.run("") #token goes here
+bot_token = input("Enter the bot token: ")
+client.run(bot_token)
