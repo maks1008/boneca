@@ -64,7 +64,7 @@ async def introduce_boneca(interaction: discord.Interaction):
             admin_utils.introduce(channel_id)
             await interaction.response.send_message("You have given me permission to interact with {}!".format(interaction.channel.mention))
     else:
-        interaction.response.send_message("This command may only be used by admins of this server.")
+        await interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="banish", description="Remove Boneca from this channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
