@@ -105,4 +105,5 @@ async def notme_boneca(interaction: discord.Integration):
 
 
 #MANDATORY FOR BOT TO RUN
-client.run("") #token goes here
+bot_token = input("Enter the bot token: ")
+client.run(bot_token)
