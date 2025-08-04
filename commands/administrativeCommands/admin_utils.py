@@ -1,3 +1,7 @@
+from math import ceil
+
+TARGET_MESSAGES_PER_DAY = 8 #how many messages boneca will send daily
+
 #RELEVANT FILES
 server_permissions_file = 'commands/administrativeCommands/bonecaServerPermissions.txt'
 do_not_target_file = 'commands/administrativeCommands/doNotTarget.txt'
@@ -7,12 +11,13 @@ quarantined_messages_file = 'commands/administrativeCommands/quarantinedMessages
 
 #RELEVANT SETS
 server_permissions_set = set()
+allowed_channels = {}
 do_not_target_set = set()
 
 #FILE PROCESSING
 def unpack():
     """executed when bot first goes online. unpacks data into abovementioned relevant sets"""
-    unpack_txt_files(server_permissions_file, server_permissions_set)
+    unpack_txt_files_into_dictionary(server_permissions_file, allowed_channels)
     unpack_txt_files(do_not_target_file, do_not_target_set)
 
 def unpack_txt_files(txt_file, relevant_set):
@@ -22,22 +27,40 @@ def unpack_txt_files(txt_file, relevant_set):
     for i in txt_list:
         relevant_set.add(i)
 
+def unpack_txt_files_into_dictionary(txt_file, dictionary):
+    """unpacks data from txt_file to dictionary"""
+    with open(txt_file, encoding='utf-8') as processed_txt:
+        txt_list = [line.strip() for line in processed_txt]
+    for line in txt_list:
+        channel_id, message_frequency = line.split(" ")
+        allowed_channels[channel_id] = int(message_frequency)
+
+
 def update_txt_files(txt_file, relevant_set):
     """transfers current info in relevant_set to specified txt_file"""
     with open(txt_file, 'w', encoding="utf-8") as new_txt:
         for i in relevant_set:
             new_txt.write("{}\n".format(i))
 
-#BOT FUNCTIONALITY
-def introduce(channel_id):
+def update_txt_files_from_dictionary(txt_file, dictionary):
+    """transfers info from given dictionary to given txt_file"""
+    with open(txt_file, 'w', encoding="utf-8") as new_txt:
+        for channel in dictionary:
+            new_txt.write("{} {}\n".format(channel, dictionary[channel]))
+
+
+#SLASH COMMANDS
+async def introduce(channel):
     """adds channel_id to server_permissions_set and bonecaServerPermissions.txt"""
-    server_permissions_set.add(channel_id)
-    update_txt_files(server_permissions_file, server_permissions_set)
+    allowed_channels[str(channel.id)] = 0
+    await frequency_gauge(channel)
+    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
+
 
 def banish(channel_id):
     """removes channel_id from server_permissions_set and bonecaServerPermissions"""
-    server_permissions_set.discard(channel_id)
-    update_txt_files(server_permissions_file, server_permissions_set)
+    allowed_channels.pop(channel_id, None)
+    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
 
 def not_me(user):
     """adds/removes user in do_not_target_set and do_not_target_file"""
@@ -74,11 +97,44 @@ def report(message):
     
     return False
 
-#GETTERS
-def valid_channel(channel_id):
-    """checks if channel_id is in server_permissions_set"""
-    return channel_id in server_permissions_set
+#HELPER COMMANDS
+async def frequency_gauge(channel):
+    """Returns the frequency of Boneca's messages in given channel"""
+    messages_per_day = [0 for i in range(10)]
+    latest_date = None
+    day = -1
+    async for message in channel.history(limit=None, oldest_first=False):
+        message_date = message.created_at.date()
+        if day >= 9:
+            break
+        elif latest_date != message_date or latest_date == None:
+            latest_date = message_date
+            day += 1
+            messages_per_day[day] += 1
+        elif latest_date == message_date:
+            messages_per_day[day] += 1
+            
+    average_messages_per_day = ceil(sum(messages_per_day)/len(messages_per_day))
+    boneca_message_frequency = average_messages_per_day // TARGET_MESSAGES_PER_DAY
+    if boneca_message_frequency > 10:
+        allowed_channels[str(channel.id)] = 10
+    else:
+        allowed_channels[str(channel.id)] = boneca_message_frequency
 
-def dnt_user(user):
+#GETTERS
+def get_valid_channel(channel_id):
+    """checks if channel_id is in server_permissions_set"""
+    return channel_id in allowed_channels
+
+def get_channel_message_frequency(channel_id):
+    """return's boneca's current message frequency on specified channel"""
+    return allowed_channels[channel_id]
+
+def get_dnt_user(user):
     """checks if user is in the do not target list"""
     return user in do_not_target_set
+
+#SETTERS
+def set_channel_message_frequency(channel_id, x):
+    """sets channel_id message frequency to x"""
+    allowed_channels[channel_id] = x
