@@ -90,9 +90,10 @@ async def report_boneca(interaction: discord.Integration):
                  "I can't figure out what I did wrong :disappointed: Please get in touch with @datkid10021 ASAP."]
     async for message in channel.history(limit=20):
         if message.author == client.user and message.content not in apologies:
-            #FLICKS A DM TO datkid
+
+            #FLICKS A DM TO THE REPORT CHANNEL OF RBBT
             report_channel = await client.fetch_channel(1402235942131208244)
-            await report_channel.send("**{} USED /REPORT:** {}".format(interaction.user.name, message.content))
+            await report_channel.send("**{} ({}) used /report:** {}".format(interaction.user.name, interaction.user.id, message.content))
 
             #REMOVES MESSAGE
             report_status = admin_utils.report(message.content)
@@ -121,7 +122,11 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-
+@client.tree.command(name="suggest", description="Suggest features for future Boneca updates", guild=RBBT_SERVER_ID)
+async def suggest_boneca(interaction: discord.Integration, suggestion: str):
+    suggest_channel = await client.fetch_channel(1402236026084397138)
+    await suggest_channel.send("**{} ({}) used /suggest:** {}".format(interaction.user.name, interaction.user.id, suggestion))
+    await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.")
 
 #MANDATORY FOR BOT TO RUN
 bot_token = input("Enter the bot token: ")
