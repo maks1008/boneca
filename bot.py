@@ -53,7 +53,7 @@ intents.message_content = True
 client = Client(command_prefix="!", intents=intents) #command prefix is arbitrary, discord enforces slash commands
 
 
-@client.tree.command(name="introduce", description="Introduce Boneca to this channel", guild=RBBT_SERVER_ID)
+@client.tree.command(name="introduce", description="Give Boneca permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
     await interaction.response.defer() #discord invalidates slash command if it doesnt respond within 3 seconds :( this line buys us more time
 
@@ -69,7 +69,7 @@ async def introduce_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="banish", description="Remove Boneca from this channel", guild=RBBT_SERVER_ID)
+@client.tree.command(name="banish", description="Remove Boneca's permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
@@ -82,7 +82,7 @@ async def banish_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="frequency", description="If you set the frequency to x, Boneca will reply once every x messages", guild=RBBT_SERVER_ID)
+@client.tree.command(name="frequency", description="Setting frequency to any value x will result in Boneca replying to one in x messages", guild=RBBT_SERVER_ID)
 async def frequency_boneca(interaction: discord.Integration, x: int):
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
@@ -90,7 +90,48 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="notme", description="Toggle Boneca's permissions to interact with you", guild=RBBT_SERVER_ID)
+@client.tree.command(name="help", description="Learn about Boneca's functionality", guild=RBBT_SERVER_ID)
+async def help_boneca(interaction: discord.Integration):
+    boneca_overview = discord.Embed(title="BONECA AMBALABU PRE-RELEASE :frog:", 
+                                  description="Hello, I'm Boneca - Discord's first ragebait bot! Welcome to my pre-release :partying_face: Currently, I specialize in dishing out ethical ragebait and top tier glazing. Keep your eyes peeled for further updates!", 
+                                  color=discord.Color.green())
+    
+    getting_started = discord.Embed(title="TO GET STARTED :technologist:",
+                                  description="Use /integrate to allow me to interact with the current channel. From there, carry on with your conversation and enjoy the ride :smiling_imp: I will aim to respond either once every 10 messages, or 8 times per day (choosing the lower rate).",
+                                  color=discord.Color.green())
+    
+    settings = discord.Embed(title="SETTINGS COMMANDS :gear:",
+                             description="Control Boneca's behaviour",
+                             color=discord.Color.green())
+    settings.add_field(name=":wave: /introduce", 
+                       value="Give Boneca permission to interact with current channel", 
+                       inline=False)
+    settings.add_field(name=":door: /banish", 
+                       value="Remove Boneca's permission to interact with current channel", 
+                       inline=False)
+    settings.add_field(name=":clock8: /frequency", 
+                       value="Setting frequency to any value x will result in Boneca replying to one in x messages (OVERRIDES DEFAULT RESPONSE RATE)", 
+                       inline=False)
+    settings.add_field(name=":x: /notme", 
+                       value="Toggle Boneca's permission to interact with you", 
+                       inline=False)
+    settings.add_field(name=":thumbsdown: /report", 
+                       value="Flag Boneca's last message as innapropriate", 
+                       inline=False)
+    settings.add_field(name=":bulb: /suggest", 
+                       value="Suggest features for future Boneca updates", 
+                       inline=False)
+
+    ragebait_glazing_commands = discord.Embed(title="RAGEBAIT + GLAZING COMMANDS :video_game:",
+                                              description="Take advantage of Boneca's custom ragebait, glazing and mini-game commands",
+                                              color=discord.Color.green())
+    ragebait_glazing_commands.add_field(name="",
+                                        value=":bangbang:**COMING SOON**:bangbang:")
+
+
+    await interaction.response.send_message(embeds=[boneca_overview, getting_started, settings, ragebait_glazing_commands])
+
+@client.tree.command(name="notme", description="Toggle Boneca's permission to interact with you", guild=RBBT_SERVER_ID)
 async def notme_boneca(interaction: discord.Integration):
     user = str(interaction.user.id)
     admin_utils.not_me(user)
