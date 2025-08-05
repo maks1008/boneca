@@ -82,6 +82,23 @@ async def banish_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
+@client.tree.command(name="frequency", description="If you set the frequency to x, Boneca will reply once every x messages", guild=RBBT_SERVER_ID)
+async def frequency_boneca(interaction: discord.Integration, x: int):
+    if interaction.user.guild_permissions.administrator:
+        admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
+        await interaction.response.send_message("I will now respond once every {} messages".format(x))
+    else:
+        await interaction.response.send_message("This command may only be used by admins of this server.")
+
+@client.tree.command(name="notme", description="Toggle Boneca's permissions to interact with you", guild=RBBT_SERVER_ID)
+async def notme_boneca(interaction: discord.Integration):
+    user = str(interaction.user.id)
+    admin_utils.not_me(user)
+    if admin_utils.get_dnt_user(user):
+        await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.")
+    elif not admin_utils.get_dnt_user(user):
+        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
+
 @client.tree.command(name="report", description="Flag Boneca's last message as innapropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
     channel = interaction.channel
@@ -104,23 +121,6 @@ async def report_boneca(interaction: discord.Integration):
                 await interaction.response.send_message(apologies[1])
             return
     await interaction.channel.send(apologies[2])
-
-@client.tree.command(name="notme", description="Toggle Boneca's permissions to interact with you", guild=RBBT_SERVER_ID)
-async def notme_boneca(interaction: discord.Integration):
-    user = str(interaction.user.id)
-    admin_utils.not_me(user)
-    if admin_utils.get_dnt_user(user):
-        await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.")
-    elif not admin_utils.get_dnt_user(user):
-        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
-
-@client.tree.command(name="frequency", description="If you set the frequency to x, Boneca will reply once every x messages", guild=RBBT_SERVER_ID)
-async def frequency_boneca(interaction: discord.Integration, x: int):
-    if interaction.user.guild_permissions.administrator:
-        admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
-        await interaction.response.send_message("I will now respond once every {} messages".format(x))
-    else:
-        await interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="suggest", description="Suggest features for future Boneca updates", guild=RBBT_SERVER_ID)
 async def suggest_boneca(interaction: discord.Integration, suggestion: str):
