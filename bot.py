@@ -3,8 +3,13 @@ import botActions.messageReactions as messageReactions
 import commands.administrativeCommands.admin_utils as admin_utils
 import discord
 from discord.ext import commands
+import os
 
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
+BOT_TOKEN = os.getenv("BONECA_TOKEN")
+
+if BOT_TOKEN is None:
+    raise ValueError("BONECA_TOKEN not found in environmental variables")
 
 class Client(commands.Bot):
     async def on_ready(self):
@@ -171,5 +176,4 @@ async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.")
 
 #MANDATORY FOR BOT TO RUN
-bot_token = input("Enter the bot token: ")
-client.run(bot_token)
+client.run(BOT_TOKEN)
