@@ -66,8 +66,6 @@ async def introduce_boneca(interaction: discord.Interaction):
             await admin_utils.introduce(channel)
             await interaction.followup.send("You have given me permission to interact with {}!".format(interaction.channel.mention))
 
-
-
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
@@ -93,8 +91,8 @@ async def report_boneca(interaction: discord.Integration):
     async for message in channel.history(limit=20):
         if message.author == client.user and message.content not in apologies:
             #FLICKS A DM TO datkid
-            datkid = await client.fetch_user(572732144195993609)
-            await datkid.send("**{} USED /REPORT:** {}".format(interaction.user.name, message.content))
+            report_channel = await client.fetch_channel(1402235942131208244)
+            await report_channel.send("**{} USED /REPORT:** {}".format(interaction.user.name, message.content))
 
             #REMOVES MESSAGE
             report_status = admin_utils.report(message.content)
