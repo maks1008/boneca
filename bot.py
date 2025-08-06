@@ -23,13 +23,11 @@ class Client(commands.Bot):
         """AS SOON AS BOT GOES ONLINE"""
         admin_utils.unpack()
 
-        #FORCES BOT TO SYNC SLASH COMMANDS
-        try:
+        try: #FORCES BOT TO SYNC SLASH COMMANDS
             synced = await self.tree.sync(guild=RBBT_SERVER_ID)
             print(f"{len(synced)} commands synced successfully.")
         except Exception as e:
             print("SYNCING ERROR: {}".format(e))
-
         client.loop.create_task(memorial_checker())
         print(f"{self.user} is up and running!")
     
@@ -48,17 +46,25 @@ class Client(commands.Bot):
         #RUNS TRIGGER WORD DETECTOR
         trigger = messageReactions.triggers_detected(message.content)
         if trigger is not False:
-            await message.channel.send(messageReactions.trigger_message(trigger))
+            async with message.channel.typing():
+                await asyncio.sleep(admin_utils.typing_speed(trigger))
+                await message.channel.send(messageReactions.trigger_message(trigger))
             return
         
         #GENERATES A MESSAGE RESPONSE (glazing/ragebait)
         response_frequency = admin_utils.get_channel_message_frequency(channel_id)
         action_value = random.randrange(1, 2 * response_frequency + 1)
         if action_value == 1:
-            await message.channel.send(messageReactions.message_response("GLAZING"))
+            glaze = messageReactions.message_response("GLAZING")
+            async with message.channel.typing():
+                await asyncio.sleep(admin_utils.typing_speed(glaze))
+                await message.channel.send(glaze)
             return
         elif action_value == 2:
-            await message.channel.send(messageReactions.message_response("RAGEBAITING"))
+            ragebait = messageReactions.message_response("RAGEBAITING")
+            async with message.channel.typing():
+                await asyncio.sleep(admin_utils.typing_speed(ragebait))
+                await message.channel.send(ragebait)
             return
 
 #THE FOLLOWING SECTION INITIALIZES AND EXECUTES BOT'S SLASH COMMANDS

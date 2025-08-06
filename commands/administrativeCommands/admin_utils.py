@@ -1,4 +1,5 @@
 from math import ceil
+import random
 
 TARGET_MESSAGES_PER_DAY = 8 #how many messages boneca will send daily
 
@@ -117,10 +118,20 @@ async def frequency_gauge(channel):
     average_messages_per_day = ceil(sum(messages_per_day)/len(messages_per_day))
     boneca_message_frequency = average_messages_per_day // TARGET_MESSAGES_PER_DAY
     print(f"messages_per_day: {messages_per_day}\n average_messages_per_day: {average_messages_per_day}\nboneca_message_frequency: {boneca_message_frequency}")
-    if boneca_message_frequency < 10:
-        allowed_channels[str(channel.id)] = 10
+    if boneca_message_frequency < 8:
+        allowed_channels[str(channel.id)] = 8
     else:
         allowed_channels[str(channel.id)] = boneca_message_frequency
+
+def typing_speed(string):
+    """returns an integer representing the amount of seconds Boneca should spend typing that message"""
+    funny_prompts = [":joy:", ":rofl:", "facts", "real"] #funny prompts
+    for i in funny_prompts:
+        if i in string.lower() and len(string) < 15:
+            return 30
+    words_per_minute = random.randint(55, 75)
+    words = len(string.split(" "))
+    return (words * 60) / (words_per_minute)
 
 #GETTERS
 def get_valid_channel(channel_id):
@@ -139,3 +150,4 @@ def get_dnt_user(user):
 def set_channel_message_frequency(channel_id, x):
     """sets channel_id message frequency to x"""
     allowed_channels[channel_id] = x
+    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
