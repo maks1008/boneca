@@ -19,7 +19,7 @@ class Client(commands.Bot):
         #FORCES BOT TO SYNC SLASH COMMANDS
         try:
             logs_channel = await client.fetch_channel(1402447400689340536)
-            self.tree.sync(guild=RBBT_SERVER_ID) 
+            self.tree.sync() 
             await logs_channel.send("Slash commands have been synced globally.")
         except Exception as e:
             await logs_channel.send("SYNCING ERROR: {}".format(e))
