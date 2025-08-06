@@ -1,12 +1,17 @@
-import random
+import asyncio
 import botActions.messageReactions as messageReactions
 import commands.administrativeCommands.admin_utils as admin_utils
+import commands.administrativeCommands.memorial as memorial
 import discord
-from discord.ext import commands
+import datetime
 import os
+import random
+from discord.ext import commands
+
 
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
 KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
+PENTHOUSE_ID = 510993237926871054
 
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
@@ -25,6 +30,7 @@ class Client(commands.Bot):
         except Exception as e:
             print("SYNCING ERROR: {}".format(e))
 
+        client.loop.create_task(memorial_checker())
         print(f"{self.user} is up and running!")
     
     async def on_message(self, message):
@@ -176,6 +182,21 @@ async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     suggest_channel = await client.fetch_channel(1402236026084397138)
     await suggest_channel.send("**{} ({}) used /suggest:** {}".format(interaction.user.name, interaction.user.id, suggestion))
     await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.")
+
+async def memorial_checker():
+    await client.wait_until_ready()
+    while not client.is_closed():
+        penthouse = await client.fetch_channel(PENTHOUSE_ID)
+        testing_channel = await client.fetch_channel(1394643137657442376)
+        now = datetime.datetime.now()
+        if 17 <= now.hour < 24:
+            try:
+                event, message = memorial.memorial()
+                if event == True:
+                    await penthouse.send(message)
+            except Exception as e:
+                    await testing_channel.send(f"**EMERGENCY!** memorial_checker() IS BUSTED!: {e}")
+        await asyncio.sleep(300)
 
 #MANDATORY FOR BOT TO RUN
 client.run(BOT_TOKEN)
