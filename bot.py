@@ -20,7 +20,6 @@ class Client(commands.Bot):
         try:
             logs_channel = await client.fetch_channel(1402447400689340536)
             await self.tree.sync() 
-            await logs_channel.send("Slash commands have been synced globally.")
         except Exception as e:
             await logs_channel.send("SYNCING ERROR: {}".format(e))
 
