@@ -16,12 +16,13 @@ class Client(commands.Bot):
         """AS SOON AS BOT GOES ONLINE"""
         admin_utils.unpack()
 
-        #FORCES BOT TO SYNC SLASH COMMANDS (GOOD FOR TESTING)
+        #FORCES BOT TO SYNC SLASH COMMANDS
         try:
-            synced = await self.tree.sync(guild=RBBT_SERVER_ID) 
-            print("{} commands succesfully synced to {}".format(len(synced), RBBT_SERVER_ID.id))
+            logs_channel = await client.fetch_channel(1402447400689340536)
+            self.tree.sync(guild=RBBT_SERVER_ID) 
+            await logs_channel.send("Slash commands have been synced globally.")
         except Exception as e:
-            print("ERROR: {}".format(e))
+            await logs_channel.send("SYNCING ERROR: {}".format(e))
 
         print("{} is up and running!".format(self.user))
     
