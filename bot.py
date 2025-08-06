@@ -6,6 +6,8 @@ from discord.ext import commands
 import os
 
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
+KAWAII_SERVER_ID = discord.Object(id=1384345396775747679) 
+
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
 if BOT_TOKEN is None:
@@ -18,10 +20,9 @@ class Client(commands.Bot):
 
         #FORCES BOT TO SYNC SLASH COMMANDS
         try:
-            await self.tree.sync() 
+            await self.tree.sync(guild=KAWAII_SERVER_ID) 
         except Exception as e:
-            logs_channel = await client.fetch_channel(1402447400689340536)
-            await logs_channel.send("SYNCING ERROR: {}".format(e))
+            print("SYNCING ERROR: {}".format(e))
 
         print("{} is up and running!".format(self.user))
     
