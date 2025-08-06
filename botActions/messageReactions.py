@@ -1,7 +1,5 @@
 import random
 
-
-
 ### TRIGGER DETECTOR ###
 trigger_words = ['huh', 'lmfao']
 
@@ -10,7 +8,7 @@ def triggers_detected(message):
     filtered_message = ""
     for i in message:
         if i.isalpha():
-            filtered_message += i
+            filtered_message += i.lower()
     for i in trigger_words:
         if i in filtered_message:
             return i

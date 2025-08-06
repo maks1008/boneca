@@ -116,7 +116,8 @@ async def frequency_gauge(channel):
             
     average_messages_per_day = ceil(sum(messages_per_day)/len(messages_per_day))
     boneca_message_frequency = average_messages_per_day // TARGET_MESSAGES_PER_DAY
-    if boneca_message_frequency > 10:
+    print(f"messages_per_day: {messages_per_day}\n average_messages_per_day: {average_messages_per_day}\nboneca_message_frequency: {boneca_message_frequency}")
+    if boneca_message_frequency < 10:
         allowed_channels[str(channel.id)] = 10
     else:
         allowed_channels[str(channel.id)] = boneca_message_frequency
