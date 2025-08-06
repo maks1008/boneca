@@ -18,9 +18,9 @@ class Client(commands.Bot):
 
         #FORCES BOT TO SYNC SLASH COMMANDS
         try:
-            logs_channel = await client.fetch_channel(1402447400689340536)
             await self.tree.sync() 
         except Exception as e:
+            logs_channel = await client.fetch_channel(1402447400689340536)
             await logs_channel.send("SYNCING ERROR: {}".format(e))
 
         print("{} is up and running!".format(self.user))
