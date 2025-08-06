@@ -6,6 +6,8 @@ from discord.ext import commands
 import os
 
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
+KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
+
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
 if BOT_TOKEN is None:
@@ -18,12 +20,12 @@ class Client(commands.Bot):
 
         #FORCES BOT TO SYNC SLASH COMMANDS
         try:
-            await self.tree.sync() 
+            synced = await self.tree.sync(guild=RBBT_SERVER_ID)
+            print(f"{len(synced)} commands synced successfully.")
         except Exception as e:
-            logs_channel = await client.fetch_channel(1402447400689340536)
-            await logs_channel.send("SYNCING ERROR: {}".format(e))
+            print("SYNCING ERROR: {}".format(e))
 
-        print("{} is up and running!".format(self.user))
+        print(f"{self.user} is up and running!")
     
     async def on_message(self, message):
         """MESSAGE REACTIONS"""
@@ -59,7 +61,7 @@ intents.message_content = True
 client = Client(command_prefix="!", intents=intents) #command prefix is arbitrary, discord enforces slash commands
 
 
-@client.tree.command(name="introduce", description="Give Boneca permission to interact with current channel")
+@client.tree.command(name="introduce", description="Give Kerkerkar permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
     await interaction.response.defer() #discord invalidates slash command if it doesnt respond within 3 seconds :( this line buys us more time
 
@@ -75,7 +77,7 @@ async def introduce_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="banish", description="Remove Boneca's permission to interact with current channel")
+@client.tree.command(name="banish", description="Remove Kerkerkar's permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
@@ -88,7 +90,7 @@ async def banish_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="frequency", description="Setting frequency to any value x will result in Boneca replying to one in x messages")
+@client.tree.command(name="frequency", description="Change Kerkerkar's message frequency", guild=RBBT_SERVER_ID)
 async def frequency_boneca(interaction: discord.Integration, x: int):
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
@@ -96,7 +98,7 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
-@client.tree.command(name="help", description="Learn about Boneca's functionality")
+@client.tree.command(name="help", description="Learn about Kerkerkar's functionality", guild=RBBT_SERVER_ID)
 async def help_boneca(interaction: discord.Integration):
     boneca_overview = discord.Embed(title="BONECA AMBALABU PRE-RELEASE :frog:", 
                                   description="Hello, I'm Boneca - Discord's first ragebait bot! Welcome to my pre-release :partying_face: Currently, I specialize in dishing out ethical ragebait and top tier glazing. Keep your eyes peeled for further updates!", 
@@ -137,7 +139,7 @@ async def help_boneca(interaction: discord.Integration):
 
     await interaction.response.send_message(embeds=[boneca_overview, getting_started, settings, ragebait_glazing_commands])
 
-@client.tree.command(name="notme", description="Toggle Boneca's permission to interact with you")
+@client.tree.command(name="notme", description="Toggle Kerkerkar's permission to interact with you", guild=RBBT_SERVER_ID)
 async def notme_boneca(interaction: discord.Integration):
     user = str(interaction.user.id)
     admin_utils.not_me(user)
@@ -146,7 +148,7 @@ async def notme_boneca(interaction: discord.Integration):
     elif not admin_utils.get_dnt_user(user):
         await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
 
-@client.tree.command(name="report", description="Flag Boneca's last message as innapropriate")
+@client.tree.command(name="report", description="Flag Kerkerkar's last message as innapropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
     channel = interaction.channel
     apologies = ["I'm sorry :worried: I took that too far... I've removed that prompt from my database.",
@@ -169,7 +171,7 @@ async def report_boneca(interaction: discord.Integration):
             return
     await interaction.channel.send(apologies[2])
 
-@client.tree.command(name="suggest", description="Suggest features for future Boneca updates")
+@client.tree.command(name="suggest", description="Suggest features for future Kerkerkar updates", guild=RBBT_SERVER_ID)
 async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     suggest_channel = await client.fetch_channel(1402236026084397138)
     await suggest_channel.send("**{} ({}) used /suggest:** {}".format(interaction.user.name, interaction.user.id, suggestion))
