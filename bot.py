@@ -2,6 +2,7 @@ import asyncio
 import botActions.messageReactions as messageReactions
 import commands.administrativeCommands.admin_utils as admin_utils
 import commands.administrativeCommands.memorial as memorial
+import commands.functionalityCommands.thanosrank as thanosrank
 import discord
 import datetime
 import os
@@ -12,6 +13,7 @@ from discord.ext import commands
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
 KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
 PENTHOUSE_ID = 510993237926871054
+LOGS_IG = 1402951184385441804
 
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
@@ -85,7 +87,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = Client(command_prefix="!", intents=intents) #command prefix is arbitrary, discord enforces slash commands
 
-
+#SETTINGS SLASH COMMANDS
 @client.tree.command(name="introduce", description="Give Kerkerkar permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
     await interaction.response.defer() #discord invalidates slash command if it doesnt respond within 3 seconds :( this line buys us more time
@@ -116,6 +118,7 @@ async def banish_boneca(interaction: discord.Interaction):
         await interaction.response.send_message("This command may only be used by admins of this server.")
 
 @client.tree.command(name="frequency", description="Change Kerkerkar's message frequency", guild=RBBT_SERVER_ID)
+@discord.app_commands.describe(x="New rate")
 async def frequency_boneca(interaction: discord.Integration, x: int):
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
@@ -216,6 +219,59 @@ async def update_boneca(interaction: discord.Integration):
         channel = await client.fetch_channel(int(i))
         await channel.send(embed=update_message)
     await interaction.followup.send("The update message has been sent!")
+
+#FUNCTIONALITY SLASH COMMANDS
+@client.tree.command(name="thanosrank", description="Vaporize another user", guild=RBBT_SERVER_ID)
+@discord.app_commands.describe(target="Tag the user you'd like to thanosrank")
+async def boneca_thanosrank(interaction: discord.Integration, target: discord.Member):
+    #SETUP
+    await interaction.response.defer()
+    server = interaction.guild
+    logs_channel = await client.fetch_channel(LOGS_IG)
+    thanosrank_role = discord.utils.get(server.roles, name="T H A N O S R A N K")
+    now = datetime.datetime.now(datetime.timezone.utc)
+    if thanosrank_role is None:
+        await thanosrank.create_thanosrank(server, discord.Color.dark_purple, logs_channel, interaction)
+        return
+
+    #ELIGIBILITY CHECKS
+    attacker = interaction.user
+    if admin_utils.get_dnt_user(str(attacker.id)):
+        await interaction.followup.send("Use /notme to gain access to Boneca's functionality")
+        return
+    if thanosrank.check_cooldown(attacker):
+        await interaction.followup.send(f"You can't use /thanosrank until {thanosrank.check_when_cooldown_runs_out(attacker)}")
+        return
+    
+    if admin_utils.get_dnt_user(str(target.id)):
+        await interaction.followup.send("You cannot use /thanosrank on the selected user.")
+        return
+    if thanosrank.check_if_safe(target):
+        await interaction.followup.send("Selected user is safe from /thanosrank.")
+        return
+
+    #/THANOSRANK STARTS HERE
+    thanosrank.add_thanos_cooldown(interaction.user, now)
+    fate_decider = random.randint(1,3) #1 = follow thru, 2 = nothing happens, 3 = betray
+
+    if fate_decider == 2: #nothing happens
+        await interaction.followup.send(thanosrank.get_thanosrank_message(fate_decider, target))
+        return
+    
+    if fate_decider == 3: #thanosrank betrays
+        target = interaction.user
+    
+    cutoff = now - datetime.timedelta(hours=24)
+    async for message in interaction.channel.history(limit=None, after=cutoff):
+        if message.author == target:
+            await message.delete()
+
+    #adds to THANOSRANK
+    thanosrank.add_to_thanosrank(target, now)
+
+    await target.send("You've been thanosranked :thumbsup:")
+    await interaction.followup.send(thanosrank.get_thanosrank_message(fate_decider, target))
+
 
 async def memorial_checker():
     await client.wait_until_ready()
