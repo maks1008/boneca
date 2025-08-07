@@ -329,9 +329,6 @@ async def thanosrank_service():
                 time, guild = thanosrank_dictionary[i]
                 if now >= time:
                     remove_from_thanosrank.append(i)
-                    thanosrank_role = discord.utils.get(guild.roles, name="T H A N O S R A N K")
-                    member = await guild.fetch_member(i)
-                    await member.remove_roles(thanosrank_role, reason="Free from T H A N O S R A N K")
             for i in safe_from_thanos:
                 if now >= safe_from_thanos[i]:
                     remove_from_safety.append(i)
@@ -345,6 +342,11 @@ async def thanosrank_service():
                 thanosrank.remove_from_safety(i)
             for i in remove_from_cooldown:
                 thanosrank.remove_from_cooldown(i)
+
+            thanosrank_role = discord.utils.get(guild.roles, name="T H A N O S R A N K")
+            member = await guild.fetch_member(i)
+            await member.remove_roles(thanosrank_role, reason="Free from T H A N O S R A N K")
+            
         except Exception as e:
             logs_channel = await client.fetch_channel(LOGS_IG)
             await logs_channel.send(f"ERROR: thanosrank_service() IS BUSTED!: {e}")
