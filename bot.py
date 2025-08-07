@@ -30,7 +30,7 @@ class Client(commands.Bot):
             print(f"{len(synced)} commands synced successfully.")
         except Exception as e:
             print("SYNCING ERROR: {}".format(e))
-        #client.loop.create_task(memorial_checker())
+        client.loop.create_task(memorial_checker())
         client.loop.create_task(thanosrank_service())
         print(f"{self.user} is up and running!")
     
@@ -301,7 +301,7 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
     await interaction.followup.send(thanosrank.get_thanosrank_message(fate_decider, target))
 
 
-"""async def memorial_checker():
+async def memorial_checker():
     await client.wait_until_ready()
     penthouse = await client.fetch_channel(PENTHOUSE_ID)
     while not client.is_closed():
@@ -314,7 +314,7 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
             except Exception as e:
                     testing_channel = await client.fetch_channel(1394643137657442376)
                     await testing_channel.send(f"**EMERGENCY!** memorial_checker() IS BUSTED!: {e}")
-        await asyncio.sleep(1200)"""
+        await asyncio.sleep(1200)
 
 async def thanosrank_service():
     await client.wait_until_ready()
