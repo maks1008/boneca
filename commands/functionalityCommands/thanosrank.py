@@ -38,7 +38,7 @@ silly_messages = ["what are you doing? you're thanosranked :joy:",
                   "i don't think you quite understand what being thanosranked means",
                   "honestly, I wanted to let that message through but rules are rules",
                   "what if we run away from the all together?",
-                  "doesn't matter how much you talk, no one hears you :joy",
+                  "doesn't matter how much you talk, no one hears you :joy:",
                   "looks like you're on a break from chatting... enjoy the peace for a little while",
                   "do you still like having me on the server?",
                   "tell you what, you should thanosrank someone when you're free!",
@@ -46,10 +46,9 @@ silly_messages = ["what are you doing? you're thanosranked :joy:",
 
 def add_to_thanosrank(user, time):
     """adds user to thanosrank"""
-    thanosrank_length = random.randit(2, 15)
+    thanosrank_length = random.randint(2, 30)
     time += datetime.timedelta(minutes=thanosrank_length)
-    thanosrank_dictionary[user] = time
-    print(f"thanosed until {time}")
+    thanosrank_dictionary[user.id] = (time, user.guild)
     safe_from_thanos[user] = (time + datetime.timedelta(hours=1))
 
 def add_thanos_cooldown(user, time):
@@ -83,7 +82,8 @@ def check_cooldown(user):
 
 def check_when_thanosrank_runs_out(user):
     """returns int time indicating when user will be out of thanosrank"""
-    return thanosrank_dictionary[user].strftime("%H:%M")
+    time, guild = thanosrank_dictionary[user]
+    return time.strftime("%H:%M")
 
 def check_when_safe_from_thanos_runs_out(user):
     """returns int time indicating when user will be allowed to be thanosranked again"""
@@ -111,20 +111,24 @@ def silly_thanosrank_message():
     random.shuffle(silly_messages)
     return silly_messages[0]
 
+def get_all_thanosrank_dictionaries():
+    """returns a tuple of all thanosrank_dictionaries"""
+    return (thanosrank_dictionary, safe_from_thanos, thanosrank_cooldown)
 
-async def create_thanosrank(server, color, logs_channel, interaction):
+async def create_thanosrank(server, colour, logs_channel, interaction):
     try:
         #Creates thanosrank
         thanosrank = await server.create_role(
              name="T H A N O S R A N K",
-             color=color,
+             color=colour,
              hoist=True,
              reason="/thanosrank was used")
 
         #Moves it up as high as possible in the priority list
         bot_top_role = server.me.top_role
-        max_position = bot_top_role.position - 1
-        await thanosrank.edit(position=max_position)
+        if bot_top_role.position > 1:
+            max_position = bot_top_role.position - 1
+            await thanosrank.edit(position=max_position)
     except:
-        logs_channel.send(f"{interaction.user.name} ({interaction.user.id}) ran into difficulties creating T H A N O S R A N K")
-        await interaction.response.send_message("Error: Could not create T H A N O S R A N K role. I have notified the developers")
+        await logs_channel.send(f"{interaction.user.name} ({interaction.user.id}) ran into difficulties creating T H A N O S R A N K")
+        await interaction.followup("Error: Could not create T H A N O S R A N K role. I have notified the developers")
