@@ -66,6 +66,19 @@ class Client(commands.Bot):
                 await asyncio.sleep(admin_utils.typing_speed(ragebait))
                 await message.channel.send(ragebait)
             return
+        
+    async def on_guild_join(self, guild):
+            """When Boneca joins the server for the first time"""
+            welcome = f"Thanks for inviting me to **{guild.name}**! Use /help to get started."
+            for channel in guild.text_channels:
+                if "welcome" in channel.name.lower() or "general" in channel.name.lower():
+                    await channel.send(welcome)
+                    return
+            
+            if guild.system_channel and guild.system_channel.permissions_for(guild.me).send_messages:
+                await guild.system_channel.send(welcome)
+                return
+
 
 #THE FOLLOWING SECTION INITIALIZES AND EXECUTES BOT'S SLASH COMMANDS
 intents = discord.Intents.default()
