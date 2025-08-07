@@ -138,6 +138,13 @@ def get_valid_channel(channel_id):
     """checks if channel_id is in server_permissions_set"""
     return channel_id in allowed_channels
 
+def get_channel_list():
+    """returns list of all channels where Boneca is allowed to talk"""
+    channels = []
+    for i in allowed_channels:
+        channels.append(i)
+    return channels
+
 def get_channel_message_frequency(channel_id):
     """return's boneca's current message frequency on specified channel"""
     return allowed_channels[channel_id]

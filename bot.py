@@ -100,7 +100,7 @@ async def introduce_boneca(interaction: discord.Interaction):
             await interaction.followup.send("You have given me permission to interact with {}!".format(interaction.channel.mention))
 
     else:
-        await interaction.response.send_message("This command may only be used by admins of this server.")
+        await interaction.followup.send("This command may only be used by admins of this server.")
 
 @client.tree.command(name="banish", description="Remove Kerkerkar's permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
@@ -202,11 +202,25 @@ async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     await suggest_channel.send("**{} ({}) used /suggest:** {}".format(interaction.user.name, interaction.user.id, suggestion))
     await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.")
 
+@client.tree.command(name="update", description="Sends an update message", guild=RBBT_SERVER_ID)
+async def update_boneca(interaction: discord.Integration):
+    await interaction.response.defer()
+    update_version = "v0.1-alpha"
+    description = "Read the patch notes or use /help to find out about new features, commands and more!"
+    patch_notes = "https://github.com/maks1008/boneca/releases/tag/v0.0.1"
+    update_message = discord.Embed(title=f":partying_face: **BONECA {update_version} OUT NOW**", 
+                                   description=":pencil: " + description, 
+                                   url=patch_notes,
+                                   color=discord.Color.green())
+    for i in admin_utils.get_channel_list():
+        channel = await client.fetch_channel(int(i))
+        await channel.send(embed=update_message)
+    await interaction.followup.send("The update message has been sent!")
+
 async def memorial_checker():
     await client.wait_until_ready()
     while not client.is_closed():
         penthouse = await client.fetch_channel(PENTHOUSE_ID)
-        testing_channel = await client.fetch_channel(1394643137657442376)
         now = datetime.datetime.now()
         if 17 <= now.hour < 24:
             try:
@@ -214,6 +228,7 @@ async def memorial_checker():
                 if event == True:
                     await penthouse.send(message)
             except Exception as e:
+                    testing_channel = await client.fetch_channel(1394643137657442376)
                     await testing_channel.send(f"**EMERGENCY!** memorial_checker() IS BUSTED!: {e}")
         await asyncio.sleep(300)
 
