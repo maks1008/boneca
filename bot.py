@@ -136,7 +136,7 @@ async def help_boneca(interaction: discord.Integration):
                        value="Toggle Boneca's permission to interact with you", 
                        inline=False)
     settings.add_field(name=":thumbsdown: /report", 
-                       value="Flag Boneca's last message as innapropriate", 
+                       value="Flag Boneca's last message as inappropriate", 
                        inline=False)
     settings.add_field(name=":bulb: /suggest", 
                        value="Suggest features for future Boneca updates", 
@@ -160,7 +160,7 @@ async def notme_boneca(interaction: discord.Integration):
     elif not admin_utils.get_dnt_user(user):
         await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
 
-@client.tree.command(name="report", description="Flag Kerkerkar's last message as innapropriate", guild=RBBT_SERVER_ID)
+@client.tree.command(name="report", description="Flag Kerkerkar's last message as inappropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
     channel = interaction.channel
     apologies = ["I'm sorry :worried: I took that too far... I've removed that prompt from my database.",
