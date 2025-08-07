@@ -46,14 +46,14 @@ silly_messages = ["what are you doing? you're thanosranked :joy:",
 
 def add_to_thanosrank(user, time):
     """adds user to thanosrank"""
-    thanosrank_length = random.randint(2, 30)
+    thanosrank_length = random.randint(2, 10)
     time += datetime.timedelta(minutes=thanosrank_length)
     thanosrank_dictionary[user.id] = (time, user.guild)
-    safe_from_thanos[user] = (time + datetime.timedelta(hours=1))
+    safe_from_thanos[user] = (time + datetime.timedelta(minutes=15))
 
 def add_thanos_cooldown(user, time):
     """restricts user from using thanosrank"""
-    time += datetime.timedelta(minutes=30)
+    time += datetime.timedelta(minutes=15)
     thanosrank_cooldown[user] = time
 
 def remove_from_thanosrank(user):
