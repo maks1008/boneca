@@ -244,6 +244,16 @@ async def update_boneca(interaction: discord.Integration):
     await interaction.followup.send("The update message has been sent!")
 
 #FUNCTIONALITY SLASH COMMANDS
+@client.tree.command(name="factcheck", description="Fact check previous statement", guild=RBBT_SERVER_ID)
+async def boneca_factcheck(interaction: discord.Integration):
+    truth = random.randint(0,1)
+    if truth == 0: 
+        await interaction.response.send_message("https://tenor.com/view/fact-check-kellanrockssoccer-gif-2569170256995872124")
+        return
+    if truth == 1:
+        await interaction.response.send_message("https://tenor.com/view/memes-gif-9980668056796018353")
+        return
+
 @client.tree.command(name="thanosrank", description="Vaporize another user", guild=RBBT_SERVER_ID)
 @discord.app_commands.describe(target="Tag the user you'd like to thanosrank")
 async def boneca_thanosrank(interaction: discord.Integration, target: discord.Member):
