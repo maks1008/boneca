@@ -136,7 +136,7 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
         return
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
-        await interaction.response.send_message(f"I will now respond once every {x} messages", ephemeral=True)
+        await interaction.response.send_message(f"I will now respond once every {x} messages")
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
