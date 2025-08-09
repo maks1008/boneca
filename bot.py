@@ -96,53 +96,54 @@ client = Client(command_prefix="!", intents=intents) #command prefix is arbitrar
 @client.tree.command(name="introduce", description="Give Kerkerkar permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def introduce_boneca(interaction: discord.Interaction):
     if thanosrank.check_thanosrank(interaction.user.id):
-        await interaction.response.send_message("Nice try")
+        await interaction.response.send_message("I understand attempting to use /notme or /banish when you've been thanosranked, but what are you trying to achieve here?")
         return
-    await interaction.response.defer() #discord invalidates slash command if it doesnt respond within 3 seconds :( this line buys us more time
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
         channel_id = str(channel.id)
         if admin_utils.get_valid_channel(channel_id):
-            await interaction.followup.send("I already have permissions to interact with {}!".format(interaction.channel.mention))
+            await interaction.response.send_message(f"I already have permissions to interact with {interaction.channel.mention}!", ephemeral=True)
+            return
         else:
+            await interaction.response.defer()
             await admin_utils.introduce(channel)
-            await interaction.followup.send("You have given me permission to interact with {}!".format(interaction.channel.mention))
-
+            await interaction.followup.send(f"You have given me permission to interact with {interaction.channel.mention}!")
+            return
     else:
-        await interaction.followup.send("This command may only be used by admins of this server.")
+        await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
 @client.tree.command(name="banish", description="Remove Kerkerkar's permission to interact with current channel", guild=RBBT_SERVER_ID)
 async def banish_boneca(interaction: discord.Interaction):
     if thanosrank.check_thanosrank(interaction.user.id):
-        await interaction.response.send_message("Nice try")
+        await interaction.response.send_message("Nice try but I don't take orders from a dude with a purple T H A N O S R A N K tag :joy::thumbsup:")
         return
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
         channel_id = str(channel.id)
         if admin_utils.get_valid_channel(channel_id):
             admin_utils.banish(channel_id)
-            await interaction.response.send_message("Aw man :frowning2: you've taken away my permission to interact with {} :frowning2:".format(interaction.channel.mention))
+            await interaction.response.send_message(f"Aw man :frowning2: you've taken away my permission to interact with {interaction.channel.mention} :frowning2:")
         else:
-            await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:")
+            await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:", ephemeral=True)
     else:
-        await interaction.response.send_message("This command may only be used by admins of this server.")
+        await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
 @client.tree.command(name="frequency", description="Change Kerkerkar's message frequency", guild=RBBT_SERVER_ID)
 @discord.app_commands.describe(x="New rate")
 async def frequency_boneca(interaction: discord.Integration, x: int):
     if thanosrank.check_thanosrank(interaction.user.id):
-        await interaction.response.send_message("Nice try")
+        await interaction.response.send_message("Frequency doesn't effect your T H A N O S R A N K status :joy: why bother trying to use it?")
         return
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
-        await interaction.response.send_message("I will now respond once every {} messages".format(x))
+        await interaction.response.send_message(f"I will now respond once every {x} messages", ephemeral=True)
     else:
-        await interaction.response.send_message("This command may only be used by admins of this server.")
+        await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
 @client.tree.command(name="help", description="Learn about Kerkerkar's functionality", guild=RBBT_SERVER_ID)
 async def help_boneca(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user.id):
-        await interaction.response.send_message("Trust me, there's no way to escape thanosrank")
+        await interaction.response.send_message("Trust me, there's no way to escape T H A N O S R A N K.")
         return
     boneca_overview = discord.Embed(title="BONECA AMBALABU PRE-RELEASE :frog:", 
                                   description="Hello, I'm Boneca - Discord's first ragebait bot! Welcome to my pre-release :partying_face: Currently, I specialize in dishing out ethical ragebait and top tier glazing. Keep your eyes peeled for further updates!", 
@@ -191,14 +192,14 @@ async def notme_boneca(interaction: discord.Integration):
     user = str(interaction.user.id)
     admin_utils.not_me(user)
     if admin_utils.get_dnt_user(user):
-        await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.")
+        await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.", ephemeral=True)
     elif not admin_utils.get_dnt_user(user):
-        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!")
+        await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!", ephemeral=True)
 
 @client.tree.command(name="report", description="Flag Kerkerkar's last message as inappropriate", guild=RBBT_SERVER_ID)
 async def report_boneca(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user.id):
-        await interaction.response.send_message("Nice try")
+        await interaction.response.send_message("Don't report me bud, it wasn't my choice to T H A N O S R A N K you")
         return
     channel = interaction.channel
     apologies = ["I'm sorry :worried: I took that too far... I've removed that prompt from my database.",
@@ -210,7 +211,7 @@ async def report_boneca(interaction: discord.Integration):
 
             #FLICKS A DM TO THE REPORT CHANNEL OF RBBT
             report_channel = await client.fetch_channel(1402235942131208244)
-            await report_channel.send("**{} ({}) used /report:** {}".format(interaction.user.name, interaction.user.id, message.content))
+            await report_channel.send(f"**{interaction.user.name} ({interaction.user.id}) used /report:** {message.content}")
 
             #REMOVES MESSAGE
             report_status = admin_utils.report(message.content)
@@ -225,8 +226,8 @@ async def report_boneca(interaction: discord.Integration):
 @client.tree.command(name="suggest", description="Suggest features for future Kerkerkar updates", guild=RBBT_SERVER_ID)
 async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     suggest_channel = await client.fetch_channel(1402236026084397138)
-    await suggest_channel.send("**{} ({}) used /suggest:** {}".format(interaction.user.name, interaction.user.id, suggestion))
-    await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.")
+    await suggest_channel.send(f"**{interaction.user.name} ({interaction.user.id}) used /suggest:** {suggestion}")
+    await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.", ephemeral=True)
 
 @client.tree.command(name="update", description="Sends an update message", guild=RBBT_SERVER_ID)
 async def update_boneca(interaction: discord.Integration):
