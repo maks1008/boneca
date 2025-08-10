@@ -15,7 +15,7 @@ KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
 PENTHOUSE_ID = 510993237926871054
 LOGS_IG = 1402951184385441804
 last_message_sent = datetime.datetime.now()
-cool_down = 5
+cool_down = 0
 
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
@@ -26,6 +26,7 @@ class Client(commands.Bot):
     async def on_ready(self):
         """AS SOON AS BOT GOES ONLINE"""
         admin_utils.unpack()
+        last_message_sent = datetime.datetime.now()
 
         try: #FORCES BOT TO SYNC SLASH COMMANDS
             await self.tree.sync()
@@ -63,7 +64,8 @@ class Client(commands.Bot):
             return
         
         #GENERATES A MESSAGE RESPONSE (glazing/ragebait)
-        if datetime.datetime.now() - last_message_sent >= datetime.timedelta(minutes=cool_down):
+        global last_message_sent
+        if datetime.datetime.now() - last_message_sent < datetime.timedelta(minutes=cool_down):
             return
         response_frequency = admin_utils.get_channel_message_frequency(channel_id)
         action_value = random.randrange(1, 2 * response_frequency + 1)
@@ -142,7 +144,7 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Frequency doesn't effect your T H A N O S R A N K status :joy: why bother trying to use it?")
         return
-    if not admin_utils.get_valid_channel(interaction.channel.id):
+    if not admin_utils.get_valid_channel(str(interaction.channel.id)):
         await interaction.response.send_message("I can't talk here. Use /introduce to give me permissions to interact with this channel.", ephemeral=True)
         return
     if interaction.user.guild_permissions.administrator:
