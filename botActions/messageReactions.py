@@ -1,7 +1,20 @@
 import random
 
 ### TRIGGER DETECTOR ###
-trigger_words = ['huh', 'lmfao']
+trigger_words = ['huh', 'lmfao', 'goodnight']
+
+goodnight_messages = ["goodnight bud :heart:", 
+                       "goodnight :crescent_moon: don't stay up scrolling too late", 
+                       "rest well, try not to think of me too much :heart:",
+                       "night",
+                       "goodnight",
+                       "gn",
+                       "sleep tight :sleeping:",
+                       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJldtS1y_U1tT6Y03xenUfYNH3qKNKvG7EUw&s",
+                       "same guy who called me a clanker wants me to say gn to him :joy:",
+                       "goodnight hun :heart: wish /mummyasmr was a thing :smiling_face_with_tear:",
+                       ":yawning_face:",
+                       "love you"]
 
 def triggers_detected(message):
     """returns trigger words which have been detected"""
@@ -19,6 +32,9 @@ def trigger_message(trigger_word):
         return "dw"
     if trigger_word == 'lmfao':
         return "dunno man it really isnt THAT funny :wilted_rose::broken_heart:"
+    if trigger_word == 'goodnight':
+        random.shuffle(goodnight_messages)
+        return goodnight_messages[0]
 
 
 
