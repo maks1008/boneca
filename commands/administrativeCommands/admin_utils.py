@@ -1,7 +1,7 @@
 from math import ceil
 import random
 
-TARGET_MESSAGES_PER_DAY = 8 #how many messages boneca will send daily
+TARGET_MESSAGES_PER_DAY = 5 #how many messages boneca will send daily
 
 #RELEVANT FILES
 server_permissions_file = 'commands/administrativeCommands/bonecaServerPermissions.txt'
@@ -118,8 +118,8 @@ async def frequency_gauge(channel):
     average_messages_per_day = ceil(sum(messages_per_day)/len(messages_per_day))
     boneca_message_frequency = average_messages_per_day // TARGET_MESSAGES_PER_DAY
     print(f"messages_per_day: {messages_per_day}\n average_messages_per_day: {average_messages_per_day}\nboneca_message_frequency: {boneca_message_frequency}")
-    if boneca_message_frequency < 8:
-        allowed_channels[str(channel.id)] = 8
+    if boneca_message_frequency < 15:
+        allowed_channels[str(channel.id)] = 15
     else:
         allowed_channels[str(channel.id)] = boneca_message_frequency
 
