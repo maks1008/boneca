@@ -11,9 +11,11 @@ from discord.ext import commands
 
 
 RBBT_SERVER_ID = discord.Object(id=1368129546578300978) #TESTING SERVER ID
-#KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
+KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
 PENTHOUSE_ID = 510993237926871054
 LOGS_IG = 1402951184385441804
+last_message_sent = datetime.datetime.now()
+cool_down = 5
 
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
@@ -59,6 +61,8 @@ class Client(commands.Bot):
             return
         
         #GENERATES A MESSAGE RESPONSE (glazing/ragebait)
+        if datetime.datetime.now() - last_message_sent >= datetime.timedelta(minutes=cool_down):
+            return
         response_frequency = admin_utils.get_channel_message_frequency(channel_id)
         action_value = random.randrange(1, 2 * response_frequency + 1)
         if action_value == 1:
@@ -66,12 +70,14 @@ class Client(commands.Bot):
             async with message.channel.typing():
                 await asyncio.sleep(admin_utils.typing_speed(glaze))
                 await message.channel.send(glaze)
+                last_message_sent = datetime.datetime.now()
             return
         elif action_value == 2:
             ragebait = messageReactions.message_response("RAGEBAITING")
             async with message.channel.typing():
                 await asyncio.sleep(admin_utils.typing_speed(ragebait))
                 await message.channel.send(ragebait)
+                last_message_sent = datetime.datetime.now()
             return
         
     async def on_guild_join(self, guild):
@@ -134,6 +140,8 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Frequency doesn't effect your T H A N O S R A N K status :joy: why bother trying to use it?")
         return
+    if not admin_utils.get_valid_channel(interaction.channel.id):
+        await interaction.response.send_message("I can't talk here. Use /introduce to give me permissions to interact with this channel.", ephemeral=True)
     if interaction.user.guild_permissions.administrator:
         admin_utils.set_channel_message_frequency(str(interaction.channel.id), x)
         await interaction.response.send_message(f"I will now respond once every {x} messages")
@@ -247,6 +255,9 @@ async def update_boneca(interaction: discord.Integration):
 #FUNCTIONALITY SLASH COMMANDS
 @client.tree.command(name="factcheck", description="Fact check previous statement", guild=RBBT_SERVER_ID)
 async def boneca_factcheck(interaction: discord.Integration):
+    if thanosrank.check_thanosrank(interaction.user):
+        await interaction.response.send_message("Claim: You've got T H A N O S R A N K\nFact Check: True :thumbsup:")
+        return
     truth = random.randint(0,1)
     if truth == 0: 
         await interaction.response.send_message("https://tenor.com/view/fact-check-kellanrockssoccer-gif-2569170256995872124")
@@ -260,7 +271,7 @@ async def boneca_factcheck(interaction: discord.Integration):
 async def boneca_thanosrank(interaction: discord.Integration, target: discord.Member):
     #SETUP
     if thanosrank.check_thanosrank(interaction.user):
-        await interaction.response.send_message("Nice try")
+        await interaction.response.send_message("You trynna drag others down with you?")
         return
 
     await interaction.response.defer()
