@@ -28,10 +28,12 @@ class Client(commands.Bot):
         admin_utils.unpack()
 
         try: #FORCES BOT TO SYNC SLASH COMMANDS
-            synced = await self.tree.sync(guild=RBBT_SERVER_ID)
-            print(f"{len(synced)} commands synced successfully.")
+            self.tree.sync()
+            #synced = await self.tree.sync(guild=RBBT_SERVER_ID)
+            #print(f"{len(synced)} commands synced successfully.")
         except Exception as e:
-            print("SYNCING ERROR: {}".format(e))
+            logs_channel = await client.fetch_channel(1402951184385441804)
+            await logs_channel.send("SYNCING ERROR: {}".format(e))
         client.loop.create_task(memorial_checker())
         client.loop.create_task(thanosrank_service())
         print(f"{self.user} is up and running!")
@@ -99,7 +101,7 @@ intents.message_content = True
 client = Client(command_prefix="!", intents=intents) #command prefix is arbitrary, discord enforces slash commands
 
 #SETTINGS SLASH COMMANDS
-@client.tree.command(name="introduce", description="Give Kerkerkar permission to interact with current channel", guild=RBBT_SERVER_ID)
+@client.tree.command(name="introduce", description="Give Boneca permission to interact with current channel")
 async def introduce_boneca(interaction: discord.Interaction):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("I understand attempting to use /notme or /banish when you've been thanosranked, but what are you trying to achieve here?")
@@ -118,7 +120,7 @@ async def introduce_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
-@client.tree.command(name="banish", description="Remove Kerkerkar's permission to interact with current channel", guild=RBBT_SERVER_ID)
+@client.tree.command(name="banish", description="Remove Boneca's permission to interact with current channel")
 async def banish_boneca(interaction: discord.Interaction):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Nice try but I don't take orders from a dude with a purple T H A N O S R A N K tag :joy::thumbsup:")
@@ -134,7 +136,7 @@ async def banish_boneca(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
-@client.tree.command(name="frequency", description="Change Kerkerkar's message frequency", guild=RBBT_SERVER_ID)
+@client.tree.command(name="frequency", description="Override Boneca's default response rate")
 @discord.app_commands.describe(x="New rate")
 async def frequency_boneca(interaction: discord.Integration, x: int):
     if thanosrank.check_thanosrank(interaction.user.id):
@@ -149,51 +151,69 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
 
-@client.tree.command(name="help", description="Learn about Kerkerkar's functionality", guild=RBBT_SERVER_ID)
+@client.tree.command(name="help", description="Learn about Boneca's functionality")
 async def help_boneca(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Trust me, there's no way to escape T H A N O S R A N K.")
         return
-    boneca_overview = discord.Embed(title="BONECA AMBALABU PRE-RELEASE :frog:", 
-                                  description="Hello, I'm Boneca - Discord's first ragebait bot! Welcome to my pre-release :partying_face: Currently, I specialize in dishing out ethical ragebait and top tier glazing. Keep your eyes peeled for further updates!", 
+    file = discord.File("boneca010.png", filename="boneca010.png")
+
+    boneca_overview = discord.Embed(title="", 
                                   color=discord.Color.green())
+    boneca_overview.set_image(url="attachment://boneca010.png")
     
     getting_started = discord.Embed(title="TO GET STARTED :technologist:",
-                                  description="Use /integrate to allow me to interact with the current channel. From there, carry on with your conversation and enjoy the ride :smiling_imp: I will aim to respond either once every 10 messages, or 8 times per day (choosing the lower rate).",
+                                  description="Use /integrate to allow me to interact with the current channel. From there, carry on with your conversation and enjoy the ride :smiling_imp: I will aim to respond either once every 15 messages, or 5 times per day (choosing the lower rate).",
                                   color=discord.Color.green())
     
     settings = discord.Embed(title="SETTINGS COMMANDS :gear:",
-                             description="Control Boneca's behaviour",
                              color=discord.Color.green())
     settings.add_field(name=":wave: /introduce", 
-                       value="Give Boneca permission to interact with current channel", 
+                       value="Give Boneca permission to interact with current channel.", 
                        inline=False)
     settings.add_field(name=":door: /banish", 
-                       value="Remove Boneca's permission to interact with current channel", 
+                       value="Remove Boneca's permission to interact with current channel.", 
                        inline=False)
     settings.add_field(name=":clock8: /frequency", 
-                       value="Setting frequency to any value x will result in Boneca replying to one in x messages (OVERRIDES DEFAULT RESPONSE RATE)", 
+                       value="Override Boneca's default response rate. Note: Boneca runs on RNG. Setting frequency to x will result in a 1/x chance of response.", 
                        inline=False)
     settings.add_field(name=":x: /notme", 
-                       value="Toggle Boneca's permission to interact with you", 
+                       value="Toggle Boneca's permission to interact with you.", 
                        inline=False)
     settings.add_field(name=":thumbsdown: /report", 
-                       value="Flag Boneca's last message as inappropriate", 
+                       value="Flag Boneca's last message as inappropriate (or unfunny)", 
                        inline=False)
     settings.add_field(name=":bulb: /suggest", 
                        value="Suggest features for future Boneca updates", 
                        inline=False)
 
     ragebait_glazing_commands = discord.Embed(title="RAGEBAIT + GLAZING COMMANDS :video_game:",
-                                              description="Take advantage of Boneca's custom ragebait, glazing and mini-game commands",
                                               color=discord.Color.green())
+    ragebait_glazing_commands.add_field(name=":mag_right: /factcheck",
+                                        value="Fact check the previous statement",
+                                        inline=False)
+    ragebait_glazing_commands.add_field(name=":troll: /thanosrank",
+                                        value="Vaporize another user",
+                                        inline=False)
     ragebait_glazing_commands.add_field(name="",
-                                        value=":bangbang:**COMING SOON**:bangbang:")
+                                        value=":bangbang:**MORE COMING SOON**:bangbang:",
+                                        inline=False)
+    
+    passive_activity = discord.Embed(title=":eyes: PASSIVE ACTIVITY",
+                               color=discord.Color.green())
+    passive_activity.add_field(name=":cold_face: Ragebaiting + Glazing",
+                               value="Boneca uses RNG to deliver ragebait and glazing messages throughout the day",
+                               inline=False)
+    passive_activity.add_field(name=":sleeping_accommodation: Goodnight Messages",
+                               value="Try saying goodnight to Boneca!",
+                               inline=False)
+    passive_activity.add_field(name=":bangbang:**AND MORE**:bangbang:",
+                               value="Revealing too much would spoil the fun :wink:",
+                               inline=False)
 
+    await interaction.response.send_message(embeds=[boneca_overview, getting_started, settings, ragebait_glazing_commands, passive_activity], file=file)
 
-    await interaction.response.send_message(embeds=[boneca_overview, getting_started, settings, ragebait_glazing_commands])
-
-@client.tree.command(name="notme", description="Toggle Kerkerkar's permission to interact with you", guild=RBBT_SERVER_ID)
+@client.tree.command(name="notme", description="Toggle Boneca's permission to interact with you")
 async def notme_boneca(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Try again when you're not thanosranked.")
@@ -205,7 +225,7 @@ async def notme_boneca(interaction: discord.Integration):
     elif not admin_utils.get_dnt_user(user):
         await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!", ephemeral=True)
 
-@client.tree.command(name="report", description="Flag Kerkerkar's last message as inappropriate", guild=RBBT_SERVER_ID)
+@client.tree.command(name="report", description="Flag Boneca's last message as inappropriate")
 async def report_boneca(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Don't report me bud, it wasn't my choice to T H A N O S R A N K you")
@@ -232,29 +252,14 @@ async def report_boneca(interaction: discord.Integration):
             return
     await interaction.channel.send(apologies[2])
 
-@client.tree.command(name="suggest", description="Suggest features for future Kerkerkar updates", guild=RBBT_SERVER_ID)
+@client.tree.command(name="suggest", description="Suggest features for future Boneca updates")
 async def suggest_boneca(interaction: discord.Integration, suggestion: str):
     suggest_channel = await client.fetch_channel(1402236026084397138)
     await suggest_channel.send(f"**{interaction.user.name} ({interaction.user.id}) used /suggest:** {suggestion}")
     await interaction.response.send_message("Thanks! I'll send you an update if the devs start working on this.", ephemeral=True)
 
-@client.tree.command(name="update", description="Sends an update message", guild=RBBT_SERVER_ID)
-async def update_boneca(interaction: discord.Integration):
-    await interaction.response.defer()
-    update_version = "v0.1-alpha"
-    description = "Read the patch notes or use /help to find out about new features, commands and more!"
-    patch_notes = "https://github.com/maks1008/boneca/releases/tag/v0.0.1"
-    update_message = discord.Embed(title=f":partying_face: **BONECA {update_version} OUT NOW**", 
-                                   description=":pencil: " + description, 
-                                   url=patch_notes,
-                                   color=discord.Color.green())
-    for i in admin_utils.get_channel_list():
-        channel = await client.fetch_channel(int(i))
-        await channel.send(embed=update_message)
-    await interaction.followup.send("The update message has been sent!")
-
 #FUNCTIONALITY SLASH COMMANDS
-@client.tree.command(name="factcheck", description="Fact check previous statement", guild=RBBT_SERVER_ID)
+@client.tree.command(name="factcheck", description="Fact check the previous statement")
 async def boneca_factcheck(interaction: discord.Integration):
     if thanosrank.check_thanosrank(interaction.user):
         await interaction.response.send_message("Claim: You've got T H A N O S R A N K\nFact Check: True :thumbsup:")
@@ -267,7 +272,7 @@ async def boneca_factcheck(interaction: discord.Integration):
         await interaction.response.send_message("https://tenor.com/view/memes-gif-9980668056796018353")
         return
 
-@client.tree.command(name="thanosrank", description="Vaporize another user", guild=RBBT_SERVER_ID)
+@client.tree.command(name="thanosrank", description="Vaporize another user")
 @discord.app_commands.describe(target="Tag the user you'd like to thanosrank")
 async def boneca_thanosrank(interaction: discord.Integration, target: discord.Member):
     #SETUP
@@ -335,7 +340,7 @@ async def memorial_checker():
                 if event == True:
                     await penthouse.send(message)
             except Exception as e:
-                    testing_channel = await client.fetch_channel(1394643137657442376)
+                    testing_channel = await client.fetch_channel(1394633667351150682)
                     await testing_channel.send(f"**EMERGENCY!** memorial_checker() IS BUSTED!: {e}")
         await asyncio.sleep(1200)
 
@@ -371,8 +376,9 @@ async def thanosrank_service():
             await member.remove_roles(thanosrank_role, reason="Free from T H A N O S R A N K")
             
         except Exception as e:
-            logs_channel = await client.fetch_channel(LOGS_IG)
-            await logs_channel.send(f"ERROR: thanosrank_service() IS BUSTED!: {e}")
+            return
+            #logs_channel = await client.fetch_channel(LOGS_IG)
+            #await logs_channel.send(f"ERROR: thanosrank_service() IS BUSTED!: {e}")
         await asyncio.sleep(60)
 
 #MANDATORY FOR BOT TO RUN
