@@ -28,13 +28,13 @@ class Client(commands.Bot):
         admin_utils.unpack()
 
         try: #FORCES BOT TO SYNC SLASH COMMANDS
-            self.tree.sync()
+            await self.tree.sync()
             #synced = await self.tree.sync(guild=RBBT_SERVER_ID)
             #print(f"{len(synced)} commands synced successfully.")
         except Exception as e:
             logs_channel = await client.fetch_channel(1402951184385441804)
             await logs_channel.send("SYNCING ERROR: {}".format(e))
-        client.loop.create_task(memorial_checker())
+        #client.loop.create_task(memorial_checker())
         client.loop.create_task(thanosrank_service())
         print(f"{self.user} is up and running!")
     

@@ -98,7 +98,7 @@ def get_thanosrank_message(mode, user):
     if mode == 1:
         random.shuffle(success_messages)
         message = success_messages[0].split("USER")
-        return "{message[0]}{user.mention}{message[1]}"
+        return f"{message[0]}{user.mention}{message[1]}"
     if mode == 2:
         random.shuffle(nothing_messages)
         return nothing_messages[0]
