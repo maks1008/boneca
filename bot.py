@@ -319,12 +319,6 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
         target = interaction.user
     
     await target.add_roles(thanosrank_role, reason="Thanosranked")
-    cutoff = now - datetime.timedelta(hours=24)
-    async for message in interaction.channel.history(limit=None, after=cutoff):
-        if message.author.id == target.id:
-            await message.delete()
-
-    #adds to THANOSRANK
     thanosrank.add_to_thanosrank(target, now)
 
     await target.send(f"You've been thanosranked until {thanosrank.check_when_thanosrank_runs_out(target.id)} :thumbsup:")
