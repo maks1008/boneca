@@ -37,12 +37,30 @@ silly_messages = ["what are you doing? you're thanosranked :joy:",
                   "maybe you can log off for a little while and do something productive?",
                   "i don't think you quite understand what being thanosranked means",
                   "honestly, I wanted to let that message through but rules are rules",
-                  "what if we run away from the all together?",
+                  "what if we run away from all of this together?",
                   "doesn't matter how much you talk, no one hears you :joy:",
                   "looks like you're on a break from chatting... enjoy the peace for a little while",
                   "do you still like having me on the server?",
                   "tell you what, you should thanosrank someone when you're free!",
-                  "dawg pack it up your messages are NOT gonna go thru"]
+                  "dawg pack it up your messages are NOT gonna go thru",
+                  "seriously, stop talking. just sit this out.",
+                  "i hawk tuah on you! :joy: :sweat_drops:",
+                  "send 6-7 messages and i might change my mind",
+                  "you can't talk until you've done your time",
+                  "you're starting to annoy me :anger:",
+                  "fun fact: if an admin removes the T H A N O S R A N K role from you, that won't effect my behaviour at all. In fact, that will cause a serious error in my code and you'll be T H A N O S R A N K E D until the developers reboot me :skull:",
+                  "fun fact: no one's ever given you hawk tuah :joy:",
+                  "fun fact: _ (make up your own fun fact)",
+                  "fun fact: currently i have a list of 100 ragebait prompts and a list of 100 glazing prompts. i use rng to decide which prompt to use. in v1.0.0, i will use a LLM to generate custom ragebait and glazing based on the context of the conversation.",
+                  "fun fact: Maksim Studios are not working on a $Boneca crypto coin yet. Is this something we should look into?",
+                  "blah blah blah",
+                  "did the crime? time to do the time",
+                  "you're in the thick of it, everybody knows, they know you where it snows, you skied in and they froze",
+                  "fun fact: in the MCU thanos snaps half the population of the universe out of existence indefinetly. here at Maksim Studios, i've been designed such that only 1 person gets snapped out of existence, and they only dissapear for 2-10 minutes. Maksim's generous, eh?"
+                  "at the very least no one will be able to target you for 15 minutes after you're out of here",
+                  "fun fact: if you smash your face into the wall, you will have to pay for the following: wall reparation, ambulance trip, face surgery. and guess what? you STILL won't be able to escape thanosrank",
+                  "don't view this as a punishment. take this time to scroll thru you favourite short form content platform! thanosrank doesn't last long enough for anything else.",
+                  "fun fact: boneca isn't a ragebait bot. behind the screen, boneca is actually an employee of Maksim Studios hired to ragebait and glaze people. i'm currently learning english so i apologize if some of the stuff i say doesn't make sense. seriously - there's no bad blood. i'm just paid to thanosrank you and to roast you."]
 
 def add_to_thanosrank(user, time):
     """adds user to thanosrank"""
