@@ -263,7 +263,7 @@ async def suggest_boneca(interaction: discord.Integration, suggestion: str):
 #FUNCTIONALITY SLASH COMMANDS
 @client.tree.command(name="factcheck", description="Fact check the previous statement")
 async def boneca_factcheck(interaction: discord.Integration):
-    if thanosrank.check_thanosrank(interaction.user):
+    if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Claim: You've got T H A N O S R A N K\nFact Check: True :thumbsup:")
         return
     truth = random.randint(0,1)
@@ -278,7 +278,7 @@ async def boneca_factcheck(interaction: discord.Integration):
 @discord.app_commands.describe(target="Tag the user you'd like to thanosrank")
 async def boneca_thanosrank(interaction: discord.Integration, target: discord.Member):
     #SETUP
-    if thanosrank.check_thanosrank(interaction.user):
+    if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("You trynna drag others down with you?")
         return
 
