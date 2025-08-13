@@ -308,7 +308,7 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
         return
 
     #/THANOSRANK STARTS HERE
-    thanosrank.add_thanos_cooldown(interaction.user.id, now)
+    thanosrank.add_thanos_cooldown(interaction.user, now)
     fate_decider = random.randint(1,3) #1 = follow thru, 2 = nothing happens, 3 = betray
 
     if fate_decider == 2: #nothing happens

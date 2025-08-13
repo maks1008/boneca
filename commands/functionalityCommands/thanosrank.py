@@ -67,12 +67,12 @@ def add_to_thanosrank(user, time):
     thanosrank_length = random.randint(2, 10)
     time += datetime.timedelta(minutes=thanosrank_length)
     thanosrank_dictionary[user.id] = (time, user.guild)
-    safe_from_thanos[user] = (time + datetime.timedelta(hours=2))
+    safe_from_thanos[user.id] = (time + datetime.timedelta(hours=2))
 
 def add_thanos_cooldown(user, time):
     """restricts user from using thanosrank"""
     time += datetime.timedelta(minutes=15)
-    thanosrank_cooldown[user] = time
+    thanosrank_cooldown[user.id] = time
 
 def remove_from_thanosrank(user):
     """removes user from thanosrank"""
