@@ -352,6 +352,9 @@ async def thanosrank_service():
             for i in thanosrank_dictionary:
                 time, guild = thanosrank_dictionary[i]
                 if now >= time:
+                    thanosrank_role = discord.utils.get(guild.roles, name="T H A N O S R A N K")
+                    member = await guild.fetch_member(i)
+                    await member.remove_roles(thanosrank_role, reason="Free from T H A N O S R A N K")
                     remove_from_thanosrank.append(i)
             for i in safe_from_thanos:
                 if now >= safe_from_thanos[i]:
@@ -366,11 +369,6 @@ async def thanosrank_service():
                 thanosrank.remove_from_safety(i)
             for i in remove_from_cooldown:
                 thanosrank.remove_from_cooldown(i)
-
-            for time, guild in remove_from_thanosrank:
-                thanosrank_role = discord.utils.get(guild.roles, name="T H A N O S R A N K")
-                member = await guild.fetch_member(i)
-                await member.remove_roles(thanosrank_role, reason="Free from T H A N O S R A N K")
             
         except Exception as e:
             print(e)

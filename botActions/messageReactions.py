@@ -24,6 +24,10 @@ def triggers_detected(message):
             filtered_message += i.lower()
     for i in trigger_words:
         if i in filtered_message:
+            if i == "lmfao":
+                lmfao_randomizer = random.randint(0,3)
+                if lmfao_randomizer in [1, 2 ,3]:
+                    return False
             return i
     return False
 
