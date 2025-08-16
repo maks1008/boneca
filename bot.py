@@ -318,8 +318,8 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
     if fate_decider == 3: #thanosrank betrays
         target = interaction.user
     
-    await target.add_roles(thanosrank_role, reason="Thanosranked")
     thanosrank.add_to_thanosrank(target, now)
+    await target.add_roles(thanosrank_role, reason="Thanosranked")
 
     await target.send(f"You've been thanosranked until {thanosrank.check_when_thanosrank_runs_out(target.id)} :thumbsup:")
     await interaction.followup.send(thanosrank.get_thanosrank_message(fate_decider, target))
