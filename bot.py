@@ -15,7 +15,7 @@ KAWAII_SERVER_ID = discord.Object(id=440657990287360001)
 PENTHOUSE_ID = 510993237926871054
 LOGS_IG = 1402951184385441804
 last_message_sent = datetime.datetime.now()
-cool_down = 0
+cool_down = 5
 
 BOT_TOKEN = os.getenv("BONECA_TOKEN")
 
