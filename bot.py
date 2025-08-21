@@ -8,7 +8,6 @@ import random
 from discord.ext import commands
 
 import botActions.messageReactions as messageReactions
-import commands.administrativeCommands.admin_utils as admin_utils
 import commands.functionalityCommands.thanosrank as thanosrank
 
 
@@ -59,14 +58,14 @@ async def on_message(message):
         return
     if get_dnt_user(message.author.id):
         return
-    if not admin_utils.get_valid_channel(channel_id):
+    if not get_valid_channel(channel_id):
         return
         
     #RUNS TRIGGER WORD DETECTOR
     trigger = messageReactions.triggers_detected(message.content)
     if trigger is not False:
         async with message.channel.typing():
-            await asyncio.sleep(admin_utils.typing_speed(trigger))
+            await asyncio.sleep(typing_speed(trigger))
             await message.channel.send(messageReactions.trigger_message(trigger))
         return
         
@@ -74,19 +73,19 @@ async def on_message(message):
     global last_message_sent
     if datetime.datetime.now() - last_message_sent < datetime.timedelta(minutes=COOLDOWN):
         return
-    response_frequency = admin_utils.get_channel_message_frequency(channel_id)
+    response_frequency = get_channel_message_frequency(channel_id)
     action_value = random.randrange(1, 2 * response_frequency + 1)
     if action_value == 1:
         glaze = messageReactions.message_response("GLAZING")
         async with message.channel.typing():
-            await asyncio.sleep(admin_utils.typing_speed(glaze))
+            await asyncio.sleep(typing_speed(glaze))
             await message.channel.send(glaze)
             last_message_sent = datetime.datetime.now()
         return
     elif action_value == 2:
         ragebait = messageReactions.message_response("RAGEBAITING")
         async with message.channel.typing():
-            await asyncio.sleep(admin_utils.typing_speed(ragebait))
+            await asyncio.sleep(typing_speed(ragebait))
             await message.channel.send(ragebait)
             last_message_sent = datetime.datetime.now()
         return
@@ -116,12 +115,12 @@ async def introduce_boneca(interaction: discord.Interaction):
         return
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
-        if admin_utils.get_valid_channel(channel.id):
+        if get_valid_channel(channel.id):
             await interaction.response.send_message(f"I already have permissions to interact with {interaction.channel.mention}!", ephemeral=True)
             return
         else:
             await interaction.response.defer()
-            await admin_utils.introduce(channel)
+            await introduce(channel)
             await interaction.followup.send(f"You have given me permission to interact with {interaction.channel.mention}!")
             return
     else:
@@ -134,8 +133,8 @@ async def banish_boneca(interaction: discord.Interaction):
         return
     if interaction.user.guild_permissions.administrator:
         channel = (interaction.channel)
-        if admin_utils.get_valid_channel(channel.id):
-            admin_utils.banish(channel.id)
+        if get_valid_channel(channel.id):
+            banish(channel.id)
             await interaction.response.send_message(f"Aw man :frowning2: you've taken away my permission to interact with {interaction.channel.mention} :frowning2:")
         else:
             await interaction.response.send_message("I can't talk here anyway :joy_cat::pray:", ephemeral=True)
@@ -148,11 +147,11 @@ async def frequency_boneca(interaction: discord.Integration, x: int):
     if thanosrank.check_thanosrank(interaction.user.id):
         await interaction.response.send_message("Frequency doesn't effect your T H A N O S R A N K status :joy: why bother trying to use it?")
         return
-    if not admin_utils.get_valid_channel(interaction.channel.id):
+    if not get_valid_channel(interaction.channel.id):
         await interaction.response.send_message("I can't talk here. Use /introduce to give me permissions to interact with this channel.", ephemeral=True)
         return
     if interaction.user.guild_permissions.administrator:
-        admin_utils.set_channel_message_frequency(interaction.channel.id, x)
+        set_channel_message_frequency(interaction.channel.id, x)
         await interaction.response.send_message(f"I will now respond once every {x} messages")
     else:
         await interaction.response.send_message("This command may only be used by admins of this server.", ephemeral=True)
@@ -225,10 +224,10 @@ async def notme_boneca(interaction: discord.Integration):
         await interaction.response.send_message("Try again when you're not thanosranked.")
         return
     user = interaction.user.id
-    admin_utils.not_me(user)
-    if admin_utils.get_dnt_user(user):
+    not_me(user)
+    if get_dnt_user(user):
         await interaction.response.send_message("You've been added to Boneca's safe list. Boneca will never target you.", ephemeral=True)
-    elif not admin_utils.get_dnt_user(user):
+    elif not get_dnt_user(user):
         await interaction.response.send_message("You've been removed from Boneca's safe list. Boneca will keep an eye out on you!", ephemeral=True)
 
 @client.tree.command(name="report", description="Flag Boneca's last message as inappropriate")
@@ -249,7 +248,7 @@ async def report_boneca(interaction: discord.Integration):
             await report_channel.send(f"**{interaction.user.name} ({interaction.user.id}) used /report:** {message.content}")
 
             #REMOVES MESSAGE
-            report_status = admin_utils.report(message.content)
+            report_status = report(message.content)
             await message.delete()
             if report_status:
                 await interaction.response.send_message(apologies[0])
@@ -296,7 +295,7 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
 
     #ELIGIBILITY CHECKS
     attacker = interaction.user
-    if admin_utils.get_dnt_user(attacker.id):
+    if get_dnt_user(attacker.id):
         await interaction.followup.send("Use /notme to gain access to Boneca's functionality")
         return
         
@@ -304,7 +303,7 @@ async def boneca_thanosrank(interaction: discord.Integration, target: discord.Me
         await interaction.followup.send(f"You can't use /thanosrank until {thanosrank.check_when_cooldown_runs_out(attacker.id)}")
         return
     
-    if admin_utils.get_dnt_user(target.id):
+    if get_dnt_user(target.id):
         await interaction.followup.send("You cannot use /thanosrank on the selected user.")
         return
     if thanosrank.check_if_safe(target.id):
@@ -409,7 +408,7 @@ do_not_target_set = set()
 #FILE PROCESSING
 def unpack():
     """executed when bot first goes online. unpacks data into relevant sets"""
-    unpack_txt_files_into_dictionary(server_permissions_file, allowed_channels)
+    unpack_allowed_channels(server_permissions_file)
     unpack_txt_files(do_not_target_file, do_not_target_set)
 
 def unpack_txt_files(txt_file, relevant_set):
@@ -417,15 +416,15 @@ def unpack_txt_files(txt_file, relevant_set):
     with open(txt_file, encoding='utf-8') as processed_txt:
         txt_list = [line.strip() for line in processed_txt]
     for i in txt_list:
-        relevant_set.add(i)
+        relevant_set.add(int(i))
 
-def unpack_txt_files_into_dictionary(txt_file, dictionary):
-    """unpacks data from txt_file to dictionary"""
+def unpack_allowed_channels(txt_file):
+    """unpacks allowed channels from txt into allowed_channels set"""
     with open(txt_file, encoding='utf-8') as processed_txt:
         txt_list = [line.strip() for line in processed_txt]
     for line in txt_list:
         channel_id, message_frequency = line.split(" ")
-        allowed_channels[channel_id] = int(message_frequency)
+        allowed_channels[int(channel_id)] = int(message_frequency)
 
 
 def update_txt_files(txt_file, relevant_set):
@@ -434,11 +433,11 @@ def update_txt_files(txt_file, relevant_set):
         for i in relevant_set:
             new_txt.write("{}\n".format(i))
 
-def update_txt_files_from_dictionary(txt_file, dictionary):
-    """transfers info from given dictionary to given txt_file"""
+def update_server_permissions_file(txt_file):
+    """transfers info from allowed_channels to server permissions txt"""
     with open(txt_file, 'w', encoding="utf-8") as new_txt:
-        for channel in dictionary:
-            new_txt.write("{} {}\n".format(channel, dictionary[channel]))
+        for channel in allowed_channels:
+            new_txt.write("{} {}\n".format(channel, allowed_channels[channel]))
 
 
 #SLASH COMMANDS HELPER FUNCTIONS
@@ -446,13 +445,13 @@ async def introduce(channel):
     """adds channel_id to server_permissions_set and bonecaServerPermissions.txt"""
     allowed_channels[str(channel.id)] = 0
     await frequency_gauge(channel)
-    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
+    update_server_permissions_file(server_permissions_file)
 
 
 def banish(channel_id):
     """removes channel_id from server_permissions_set and bonecaServerPermissions"""
     allowed_channels.pop(channel_id, None)
-    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
+    update_server_permissions_file(server_permissions_file)
 
 def not_me(user):
     """adds/removes user in do_not_target_set and do_not_target_file"""
@@ -548,7 +547,7 @@ def get_dnt_user(user):
 def set_channel_message_frequency(channel_id, x):
     """sets channel_id message frequency to x"""
     allowed_channels[channel_id] = x
-    update_txt_files_from_dictionary(server_permissions_file, allowed_channels)
+    update_server_permissions_file(server_permissions_file)
 
 
 
